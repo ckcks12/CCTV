@@ -16,7 +16,7 @@ vector<double> StarSkeleton::getDistanceFromCentroid(vector<Point> contour) {
 }
 
 vector<Point> StarSkeleton::getFeatures(vector<Point> &contour, vector<double> &dist) {
-    return this->getFeatures(contour, dist, vector<double>({0.5, 0.9, 1, 0.9, 0.5}), 20);
+    return this->getFeatures(contour, dist, vector<double>({0.5, 0.9, 1, 0.9, 0.5}), 50);
 }
 
 vector<Point> StarSkeleton::getFeatures(vector<Point> &contour, vector<double> &dist, vector<double> kernel, double minBetweenDist) {
