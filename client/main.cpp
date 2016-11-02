@@ -63,16 +63,20 @@ int main() {
         Mat mat;
         BlobDetector bd;
         StarSkeleton skeleton;
+        GraphTool graph_tool;
+        FilterTool filter_tool;
+        bool FLAG_WRITING = false;
 
         bd.LEARNING_RATE = 0;
 
-        cam1.open(2);
+        cam1.open(2); FLAG_WRITING = true;
+        cam1.open("/Users/lec/Desktop/SafeDesk/2.avi"); FLAG_WRITING = false;
         cam1.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
         cam1.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
 //        cam1.set(CV_CAP_PROP_FOCUS, 1);
 //        cam1.set(CV_CAP_PROP_AUTO_EXPOSURE, false);
 //        cam1.set(CV_CAP_PROP_AUTOGRAB, false);
-        cam1.set(CV_CAP_PROP_FPS, 25);
+//        cam1.set(CV_CAP_PROP_FPS, 25);
 
         while( waitKey(30) != 32 )
         {
@@ -80,54 +84,71 @@ int main() {
             imshow("background select", mat);
         }
 
-        while( waitKey(1) != 32 )
-        {
-            cam1 >> mat;
-            que.push_back(mat.clone());
-            imshow("background select", mat);
-        }
 
-        VideoWriter writer;
-//        int ex = (int)cam1.get(CV_CAP_PROP_FOURCC);
-//        ex = CV_FOURCC('M', 'P', '4', '2');
-//        ex = CV_FOURCC('M', 'J', 'P', 'G');
-//        ex = CV_FOURCC('X', 'V', 'I', 'D');
-//        ex = CV_FOURCC('D', 'I', 'V', 'X');
-        int ex = CV_FOURCC('m', 'p', '4', 'v'); // for OSX
-        writer.open("/Users/lec/Desktop/SafeDesk/1.avi", ex, 15.0, Size(WIDTH, HEIGHT));
-        while( ! que.empty() )
-        {
-            mat = que.front();
-            writer << mat;
-            que.pop_front();
-        }
-        writer.release();
 
-        return 0;
+        destroyAllWindows();
 
         while( waitKey(33) != 32 )
         {
             cam1 >> mat;
+            Mat origin_mat = mat.clone();
+            imshow("original", origin_mat);
+            que.push_back(origin_mat.clone());
+
             bd.subtract(mat);
+            imshow("subtract", mat);
             bd.deleteNoise(mat);
             imshow("deleted noise", mat);
 
             vector<vector<Point>> contours;
             contours = bd.getContoursBiggerFirst(mat);
 
-            int minArea = ((WIDTH * HEIGHT) / 8);
+            int minArea = ((WIDTH * HEIGHT) / 12);
 
             for( int i=0; i<contours.size(); i++ )
             {
                 if( contourArea(contours[i]) >= minArea )
                 {
-                    Mat mat2;
-                    cvtColor(mat, mat2, CV_GRAY2BGR);
-                    drawContours(mat2, contours, 0, Scalar(0, 0, 255), 3);
-                    imshow("mat2", mat2);
+//                    Mat mat2;
+//                    cvtColor(mat, mat2, CV_GRAY2BGR);
+//                    drawContours(mat2, contours, i, Scalar(0, 0, 255), 3);
+//                    imshow("outline", mat2);
+
+                    vector<double> dist = skeleton.getDistanceFromCentroid(contours[i]);
+                    Mat graph1 = graph_tool.drawGraph(dist, WIDTH, HEIGHT, Scalar(0, 255, 0));
+                    vector<double> dist2 = filter_tool.filter(dist, vector<double>({0.5, 0.9, 1, 0.9, 0.5}));
+                    Mat graph2 = graph_tool.drawGraph(dist2, WIDTH, HEIGHT, Scalar(0, 255, 0));
+                    imshow("graph1", graph1);
+                    imshow("graph2", graph2);
+
+                    vector<Point> features = skeleton.getFeatures(contours[i], dist);
+                    int max = features.size() > 3 ? 3 : (int)features.size();
+                    for( int j=0; j<max; j++ )
+                    {
+                        circle(origin_mat, features[j], 3, Scalar(0, 0, 255), 3);
+                    }
+
+                    imshow("skeletonized", origin_mat);
+                    break;
                 }
             }
         }
+
+        if( FLAG_WRITING )
+        {
+            VideoWriter writer;
+            int ex = CV_FOURCC('m', 'p', '4', 'v'); // for OSX
+            writer.open("/Users/lec/Desktop/SafeDesk/2.avi", ex, 15.0, Size(WIDTH, HEIGHT));
+            while( ! que.empty() )
+            {
+                mat = que.front();
+                writer << mat;
+                que.pop_front();
+            }
+            writer.release();
+        }
+
+        return 0;
     }
     // 사진
     else if( input == 2 ) {
