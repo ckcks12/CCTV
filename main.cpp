@@ -10,24 +10,14 @@ using namespace cv;
 using namespace std;
 
 int main() {
-    const int THIEF_CAM_NO = 2;
-    const int ALBA_CAM_NO = 1;
-    const int INPUT = 2; // default 0;
+    const int INPUT = 1; // default 0;
     const int WIDTH = 640;
     const int HEIGHT = 360;
 
-    VideoCapture cam1, cam2;
-    BlobDetector bd;
-    StarSkeleton skeleton;
     int input;
 
 
-//    cam1.open(THIEF_CAM_NO);
-//    cam1.set(CV_CAP_PROP_FRAME_WIDTH, 640);
-//    cam1.set(CV_CAP_PROP_FRAME_HEIGHT, 360);
-//    cam1.set(CV_CAP_PROP_FOCUS, 0);
-//    cam1.set(CV_CAP_PROP_AUTO_EXPOSURE, false);
-//    cam1.set(CV_CAP_PROP_AUTOGRAB, false);
+
 
     if( ! INPUT )
     {
@@ -47,10 +37,55 @@ int main() {
     // 웹캠
     if( input == 1 )
     {
+        VideoCapture cam1, cam2;
+        Mat mat;
+        BlobDetector bd;
+        StarSkeleton skeleton;
 
+        bd.LEARNING_RATE = 0.003;
+
+        cam1.open(1);
+        cam1.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
+        cam1.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
+        cam1.set(CV_CAP_PROP_FOCUS, 0);
+        cam1.set(CV_CAP_PROP_AUTO_EXPOSURE, false);
+        cam1.set(CV_CAP_PROP_AUTOGRAB, false);
+
+        while( waitKey(33) != 32 )
+        {
+            cam1 >> mat;
+            imshow("background select", mat);
+        }
+
+        while( waitKey(33) != 32 )
+        {
+            cam1 >> mat;
+            bd.subtract(mat);
+            bd.deleteNoise(mat);
+            imshow("deleted noise", mat);
+
+            vector<vector<Point>> contours;
+            contours = bd.getContoursBiggerFirst(mat);
+
+            int minArea = ((WIDTH * HEIGHT) / 6);
+
+            for( int i=0; i<contours.size(); i++ )
+            {
+                if( contourArea(contours[i]) >= minArea )
+                {
+                    Mat mat2;
+                    cvtColor(mat, mat2, CV_GRAY2BGR);
+                    drawContours(mat2, contours, 0, Scalar(0, 0, 255), 3);
+                    imshow("mat2", mat2);
+                }
+            }
+        }
     }
     // 사진
     else if( input == 2 ) {
+        BlobDetector bd;
+        StarSkeleton skeleton;
+
         Mat mat = imread("/Users/lec/Desktop/SafeDesk/noisy.png", 0);
         resize(mat, mat, Size(WIDTH, HEIGHT));
 
