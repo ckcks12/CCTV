@@ -10,10 +10,12 @@ Mat &BlobDetector::subtract(Mat &mat) {
 }
 
 Mat &BlobDetector::deleteNoise(Mat &mat, int iteration) {
+    morphologyEx(mat, mat, MORPH_OPEN, this->KERNEL, Point(-1, -1), 3);
     morphologyEx(mat, mat, MORPH_CLOSE, this->KERNEL, Point(-1, -1), 1);
     threshold(mat, mat, 254, 255, 0);
-    erode(mat, mat, this->KERNEL, Point(-1, -1), iteration);
     dilate(mat, mat, this->KERNEL, Point(-1, -1), iteration);
+    erode(mat, mat, this->KERNEL, Point(-1, -1), iteration * 2);
+//    dilate(mat, mat, this->KERNEL, Point(-1, -1), iteration);
 }
 
 vector<vector<Point>> BlobDetector::getContours(Mat &mat) {
