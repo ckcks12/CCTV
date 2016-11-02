@@ -40,7 +40,7 @@ vector<Point> StarSkeleton::getFeatures(vector<Point> &contour, vector<double> &
     }
 
     std::sort(features_bag.begin(), features_bag.end(), [](pair<Point, double> p1, pair<Point, double> p2) {
-        return p1.second < p2.second;
+        return p1.second >  p2.second;
     });
 
     for( int i=0; i<features_bag.size(); i++ )
