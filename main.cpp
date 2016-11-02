@@ -42,12 +42,12 @@ int main() {
         BlobDetector bd;
         StarSkeleton skeleton;
 
-        bd.LEARNING_RATE = 0.003;
+        bd.LEARNING_RATE = 0;
 
         cam1.open(1);
         cam1.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
         cam1.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
-        cam1.set(CV_CAP_PROP_FOCUS, 0);
+        cam1.set(CV_CAP_PROP_FOCUS, 1);
         cam1.set(CV_CAP_PROP_AUTO_EXPOSURE, false);
         cam1.set(CV_CAP_PROP_AUTOGRAB, false);
 
