@@ -20,25 +20,25 @@ int main() {
 
     curl_global_init(CURL_GLOBAL_ALL);
 
-    thread t([](){
-        CURL *curl = curl_easy_init();
-        if( curl )
-        {
-            curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:5000/data");
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, [](char *data, size_t size, size_t nmemb, void* stream) {
-                cout << data << endl;
-            });
-            CURLcode res = curl_easy_perform(curl);
-            if( res != CURLE_OK )
-            {
-                cerr << curl_easy_strerror(res) << endl;
-            }
-        }
-    });
-
-    t.join();
-
-    return 0;
+//    thread t([](){
+//        CURL *curl = curl_easy_init();
+//        if( curl )
+//        {
+//            curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:5000/data");
+//            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, [](char *data, size_t size, size_t nmemb, void* stream) {
+//                cout << data << endl;
+//            });
+//            CURLcode res = curl_easy_perform(curl);
+//            if( res != CURLE_OK )
+//            {
+//                cerr << curl_easy_strerror(res) << endl;
+//            }
+//        }
+//    });
+//
+//    t.join();
+//
+//    return 0;
 
     if( ! INPUT )
     {
@@ -65,7 +65,7 @@ int main() {
 
         bd.LEARNING_RATE = 0;
 
-        cam1.open(1);
+        cam1.open(2);
         cam1.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
         cam1.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
         cam1.set(CV_CAP_PROP_FOCUS, 1);
