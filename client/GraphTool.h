@@ -13,8 +13,9 @@ using namespace std;
 
 class GraphTool {
 public:
-    template<typename T>
-            Mat drawGraph(vector<T> vec, int width, int height, Scalar color);
+//    template<typename T>
+//            Mat drawGraph(vector<T> vec, int width, int height, Scalar color);
+    Mat drawGraph(vector<double> vec, int width, int height, Scalar color);
 };
 
 
