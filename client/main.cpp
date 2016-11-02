@@ -4,6 +4,8 @@
 #include "GraphTool.h"
 #include "FilterTool.h"
 #include "StarSkeleton.h"
+#include "curl/curl.h"
+#include <thread>
 
 
 using namespace cv;
@@ -16,8 +18,27 @@ int main() {
 
     int input;
 
+    curl_global_init(CURL_GLOBAL_ALL);
 
+    thread t([](){
+        CURL *curl = curl_easy_init();
+        if( curl )
+        {
+            curl_easy_setopt(curl, CURLOPT_URL, "http://localhost:5000/data");
+            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, [](char *data, size_t size, size_t nmemb, void* stream) {
+                cout << data << endl;
+            });
+            CURLcode res = curl_easy_perform(curl);
+            if( res != CURLE_OK )
+            {
+                cerr << curl_easy_strerror(res) << endl;
+            }
+        }
+    });
 
+    t.join();
+
+    return 0;
 
     if( ! INPUT )
     {
