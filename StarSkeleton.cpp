@@ -22,21 +22,31 @@ vector<Point> StarSkeleton::getFeatures(vector<Point> &contour, vector<double> &
 vector<Point> StarSkeleton::getFeatures(vector<Point> &contour, vector<double> &dist, vector<double> kernel) {
     FilterTool filter;
     vector<double> dist2 = filter.filter(dist, kernel);
-    vector<Point> contour2;
+    vector<pair<Point, double>> features_bag;
+    vector<Point> features;
 
     bool increase = true;
     for( int i=1; i<dist2.size(); i++ )
     {
-        if( increase && dist2[i-1] > dist2[i] )
+        if( increase && dist2[i - 1] > dist2[i] )
         {
-            contour2.push_back(contour[i - 1]);
+            features_bag.push_back(pair<Point, double>(contour[i - 1], dist2[i-1]));
             increase = false;
         }
-        else if( ! increase && dist2[i-1] < dist2[i] )
+        else if( ! increase && dist2[i - 1] < dist2[i] )
         {
             increase = true;
         }
     }
 
-    return contour2;
+    std::sort(features_bag.begin(), features_bag.end(), [](pair<Point, double> p1, pair<Point, double> p2) {
+        return p1.second < p2.second;
+    });
+
+    for( int i=0; i<features_bag.size(); i++ )
+    {
+        features.push_back(features_bag[i].first);
+    }
+    
+    return features;
 }
