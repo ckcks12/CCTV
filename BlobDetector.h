@@ -12,8 +12,8 @@ using namespace cv;
 
 class BlobDetector {
 public:
-    const int LEARNING_RATE = 0;
-    const Mat KERNEL = Mat();
+    double LEARNING_RATE = 0;
+     Mat KERNEL = Mat();
 
     BackgroundSubtractorMOG2 bgsub;
     Mat& subtract(Mat&);
