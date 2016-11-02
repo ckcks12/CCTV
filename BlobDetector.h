@@ -18,6 +18,8 @@ public:
     BackgroundSubtractorMOG2 bgsub;
     Mat& subtract(Mat&);
     Mat& deleteNoise(Mat& mat, int iteration = 1);
+    vector<vector<Point>> getContours(Mat& mat);
+    vector<vector<Point>> getContoursBiggerFirst(Mat& mat);
 };
 
 
