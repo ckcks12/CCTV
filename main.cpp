@@ -119,6 +119,8 @@ int main() {
     {
         Mat mat = imread("/Users/lec/Desktop/SafeDesk/noisy.png", 0);
         resize(mat, mat, Size(640, 360));
+        Mat original_mat = imread("/Users/lec/Desktop/SafeDesk/noisy.png");
+        resize(original_mat, original_mat, Size(640, 360));
         bd.deleteNoise(mat);
 
         dilate(mat, mat, Mat(), Point(-1, -1), 3);
@@ -156,8 +158,25 @@ int main() {
         Mat graph = drawGraph<double>(dists);
         Mat graph2 = drawGraph<double>(dists2);
 
+        bool increase = true;
+        for( int i=1; i<dists2.size(); i++ )
+        {
+            if( increase && dists2[i-1] > dists2[i] )
+            {
+                Point p1 = Point(0, 360 - (int)((dists2[i] / max) * 360));
+                Point p2 = Point(640, 360 - (int)((dists2[i] / max) * 360));
+                line(graph2, p1, p2, Scalar(0, 255, 0), 1);
+                circle(original_mat, contours[3][i], 3, Scalar(0, 255, 0), 3);
+                increase = false;
+            }
+            else if( ! increase && dists2[i-1] < dists2[i] )
+            {
+                increase = true;
+            }
+        }
 
-        imshow("graph", graph);
+        imshow("original_mat", original_mat);
+        imshow("graph1", graph);
         imshow("graph2", graph2);
         waitKey(0);
     }
@@ -166,57 +185,6 @@ int main() {
     {
         cout << "idiot..." << endl;
     }
-
-
-//    Mat bg_mat;
-//    do
-//    {
-//        cam1 >> bg_mat;
-//        imshow("select background", bg_mat);
-//    } while( waitKey(33) != 32 );
-//    destroyWindow("select background");
-//
-//    Mat fg_mat, fg_mat2, fg_mat3;
-//    SimpleBlobDetector::Params detector_params;
-//    vector<KeyPoint> keypoints;
-//    detector_params.minDistBetweenBlobs = 50.0f;
-//    detector_params.filterByInertia = false;
-//    detector_params.filterByConvexity = false;
-//    detector_params.filterByColor = false;
-//    detector_params.filterByCircularity = false;
-//    detector_params.filterByArea = true;
-//    detector_params.minArea = 500.0f;
-//    detector_params.maxArea = 640*360;
-//    SimpleBlobDetector detector(detector_params);
-//    Mat kernel = Mat();
-//    vector<vector<Point>> contours;
-//    vector<Vec4i> hierarchies;
-//
-//    do
-//    {
-//        cam1 >> fg_mat;
-//        bgsub.operator()(fg_mat, fg_mat, 0);
-//        fg_mat.copyTo(fg_mat2);
-////        dilate(fg_mat2, fg_mat2, kernel, Point(-1, -1), 3);
-//        erode(fg_mat2, fg_mat2, kernel, Point(-1, -1), 1);
-//        morphologyEx(fg_mat2, fg_mat2, MORPH_CLOSE, kernel);
-////        dilate(fg_mat2, fg_mat2, kernel, Point(-1, -1), 3);
-//        threshold(fg_mat2, fg_mat2, 254, 255, CV_THRESH_BINARY);
-////        detector.detect(fg_mat, keypoints);
-////        drawKeypoints(fg_mat, keypoints, fg_mat, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-//        imshow("fg_mat2", fg_mat2);
-//        findContours(fg_mat2, contours, hierarchies, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-//        size_t nAreaCnt = contours.size();
-//        //_DbgStr(_T("cont=%d ,hier=%d"),nAreaCnt, hierarchy.size());
-//        fg_mat3 = Mat(fg_mat.size(), CV_8UC3);
-//        for(int i=0; i< nAreaCnt; i++){
-//            Scalar color = Scalar(0, 0, 255 );//랜덤 색 만들기
-//            int thickness = 2;//CV_FILLED=내부 채움
-//            drawContours( fg_mat3, contours, i, color, thickness , 8, hierarchies );//외곽선 그리기
-//        }
-////        imshow("fg_mat2", fg_mat2);
-//
-//    } while( waitKey(33) != 32 );
 
     return 0;
 }

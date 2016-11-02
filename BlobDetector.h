@@ -10,14 +10,14 @@
 using namespace std;
 using namespace cv;
 
-class Blobber {
+class BlobDetector {
 public:
     const int LEARNING_RATE = 0;
     const Mat KERNEL = Mat();
 
     BackgroundSubtractorMOG2 bgsub;
     Mat& subtract(Mat&);
-    Mat& deleteNoise(Mat& mat, int iteration = 3);
+    Mat& deleteNoise(Mat& mat, int iteration = 1);
 };
 
 
