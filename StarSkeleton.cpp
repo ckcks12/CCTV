@@ -16,10 +16,10 @@ vector<double> StarSkeleton::getDistanceFromCentroid(vector<Point> contour) {
 }
 
 vector<Point> StarSkeleton::getFeatures(vector<Point> &contour, vector<double> &dist) {
-    return this->getFeatures(contour, dist, vector<double>({0.5, 0.9, 1, 0.9, 0.5}));
+    return this->getFeatures(contour, dist, vector<double>({0.5, 0.9, 1, 0.9, 0.5}), 20);
 }
 
-vector<Point> StarSkeleton::getFeatures(vector<Point> &contour, vector<double> &dist, vector<double> kernel) {
+vector<Point> StarSkeleton::getFeatures(vector<Point> &contour, vector<double> &dist, vector<double> kernel, double minBetweenDist) {
     FilterTool filter;
     vector<double> dist2 = filter.filter(dist, kernel);
     vector<pair<Point, double>> features_bag;
@@ -45,7 +45,17 @@ vector<Point> StarSkeleton::getFeatures(vector<Point> &contour, vector<double> &
 
     for( int i=0; i<features_bag.size(); i++ )
     {
-        features.push_back(features_bag[i].first);
+        // between distance skimmer
+        int j;
+        for( j=0; j<features.size(); j++ )
+        {
+            double d = norm(features_bag[i].first - features[j]);
+            if( d < minBetweenDist )
+                break;
+        }
+        // completely new one
+        if( j == features.size() )
+            features.push_back(features_bag[i].first);
     }
     
     return features;

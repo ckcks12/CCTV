@@ -16,7 +16,7 @@ class StarSkeleton {
 public:
     vector<double> getDistanceFromCentroid(vector<Point> contour);
     vector<Point> getFeatures(vector<Point>& contour, vector<double>& dist);
-    vector<Point> getFeatures(vector<Point>& contour, vector<double>& dist, vector<double> kernel);
+    vector<Point> getFeatures(vector<Point>& contour, vector<double>& dist, vector<double> kernel, double minBetweenDist);
 };
 
 
