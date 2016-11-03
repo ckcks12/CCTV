@@ -78,15 +78,15 @@ int main() {
 //        cam1.set(CV_CAP_PROP_AUTOGRAB, false);
 //        cam1.set(CV_CAP_PROP_FPS, 25);
 
-        while( waitKey(30) != 32 )
-        {
-            cam1 >> mat;
-            imshow("background select", mat);
-        }
-
-
-
-        destroyAllWindows();
+//        namedWindow("background select");
+//        while( waitKey(33) != 32 )
+//        {
+//            cam1 >> mat;
+//            imshow("background select", mat);
+//        }
+//
+//        destroyAllWindows();
+//        namedWindow("original");
 
         while( waitKey(33) != 32 )
         {
@@ -109,25 +109,67 @@ int main() {
             {
                 if( contourArea(contours[i]) >= minArea )
                 {
-//                    Mat mat2;
-//                    cvtColor(mat, mat2, CV_GRAY2BGR);
-//                    drawContours(mat2, contours, i, Scalar(0, 0, 255), 3);
-//                    imshow("outline", mat2);
-
                     vector<double> dist = skeleton.getDistanceFromCentroid(contours[i]);
-                    Mat graph1 = graph_tool.drawGraph(dist, WIDTH, HEIGHT, Scalar(0, 255, 0));
-                    vector<double> dist2 = filter_tool.filter(dist, vector<double>({0.5, 0.9, 1, 0.9, 0.5}));
-                    Mat graph2 = graph_tool.drawGraph(dist2, WIDTH, HEIGHT, Scalar(0, 255, 0));
-                    imshow("graph1", graph1);
-                    imshow("graph2", graph2);
+//                    Mat graph1 = graph_tool.drawGraph(dist, WIDTH, HEIGHT, Scalar(0, 255, 0));
+//                    vector<double> dist2 = filter_tool.filter(dist, vector<double>({0.5, 0.9, 1, 0.9, 0.5}));
+//                    Mat graph2 = graph_tool.drawGraph(dist2, WIDTH, HEIGHT, Scalar(0, 255, 0));
+//                    imshow("graph1", graph1);
+//                    imshow("graph2", graph2);
 
                     vector<Point> features = skeleton.getFeatures(contours[i], dist);
-                    int max = features.size() > 3 ? 3 : (int)features.size();
-                    for( int j=0; j<max; j++ )
-                    {
-                        circle(origin_mat, features[j], 3, Scalar(0, 0, 255), 3);
-                    }
+                    if( features.size() == 0 )
+                        break;
 
+                    // heuristic
+                    Point head, lhand, rhand, c;
+
+                    // retrieve center point
+                    Moments m = moments(contours[i]);
+                    c = Point((int)(m.m10/m.m00), (int)(m.m01/m.m00));
+
+                    // lhand && rhand
+                    lhand = Point(WIDTH, 0);
+                    rhand = Point(0, 0);
+                    for_each(features.begin(), features.end(), [&](Point &f) {
+                        if( abs(c.x - f.x) < 50 )
+                            return;
+                        if( lhand.x == WIDTH )
+                        {
+                            if( f.x < lhand.x )
+                                lhand = f;
+                        }
+                        else
+                        {
+                            if( abs(lhand.x - f.x) > 20 )
+                                if( f.x < lhand.x )
+                                    lhand = f;
+                        }
+                        if( rhand.x == WIDTH )
+                        {
+                            if( f.x > rhand.x )
+                                rhand = f;
+                        }
+                        else
+                        {
+                            if( abs(rhand.x - f.x) > 20 )
+                                if( f.x > rhand.x )
+                                    rhand = f;
+                        }
+                    });
+                    //head
+                    head = Point(0, HEIGHT);
+                    for_each(features.begin(), features.end(), [&](Point &f) {
+                        if( abs(c.x - f.x) > 50 )
+                            return;
+
+                        if( lhand.x < f.x && f.x < rhand.x )
+                            if( f.y < head.y )
+                                head = f;
+                    });
+
+                    circle(origin_mat, head, 3, Scalar(255, 0, 0), 3);
+                    circle(origin_mat, lhand, 3, Scalar(0, 255, 0), 3);
+                    circle(origin_mat, rhand, 3, Scalar(0, 0, 255), 3);
                     imshow("skeletonized", origin_mat);
                     break;
                 }
