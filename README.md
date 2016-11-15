@@ -6,6 +6,7 @@ Intelligent CCTV Analysis Security with OpenCV 2.4
 - Star Skeleton(Custom LPF with variety filters)
 - Heuristic Algorithm for Detecting Head, Left hand, Right hand
 - Server - Client Architecture for Cloud Based System
+- Simple Classification - Caution when two hands are upon the chest(actually collarbone)
 
 ### To do
 - Send Features to Server
@@ -16,6 +17,9 @@ Intelligent CCTV Analysis Security with OpenCV 2.4
 It's just for fun. I had just made it in a couple of days but I hope this helps!
 
 ### Screenshot
+![sample4.png](https://raw.githubusercontent.com/ckcks12/SafeDesk/master/sample4.png)
+Caution when two hands are upon the chest(actually collarbone)
+
 ![sample3.png](https://raw.githubusercontent.com/ckcks12/SafeDesk/master/sample3.png)
 Star Skeleton with Heuristic Algorithm(blue-head, red-left hand, green-right hand)
 
