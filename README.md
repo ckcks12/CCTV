@@ -16,6 +16,9 @@ Intelligent CCTV Analysis Security with OpenCV 2.4
 ### In addition...
 It's just for fun. I had just made it in a couple of days but I hope this helps!
 
+### Demo Video on Youtube
+https://youtu.be/uwZ1W-tKSrI
+
 ### Screenshot
 ![sample4.png](https://raw.githubusercontent.com/ckcks12/SafeDesk/master/sample4.png)
 Caution when two hands are upon the chest(actually collarbone)
